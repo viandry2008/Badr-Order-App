@@ -114,7 +114,7 @@
     export default OrderPage;
 
     const styles = StyleSheet.create({
-        container: { flex: 1, padding: 16, backgroundColor: '#fff' },
+        container: { flex: 1, padding: 16, backgroundColor: ColorStyle.white },
         item: { padding: 16, marginBottom: 16, borderRadius: 4, borderWidth:1, borderColor:'#E0E0E0' },
         name: { fontSize: 16, fontWeight: 'bold' },
     });
