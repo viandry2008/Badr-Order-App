@@ -15,7 +15,7 @@ const HeaderOptions = (title: string, icon: any, onPress: () => void) => ({
         fontSize: 16,
     },
     headerLeft: () => (
-        <TouchableOpacity onPress={onPress} style={{ marginLeft: 15 }}>
+        <TouchableOpacity onPress={onPress}>
             <Image source={icon} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
         </TouchableOpacity>
     ),
