@@ -4,6 +4,7 @@ import ButtonComponent from '../../components/ButtonComponent';
 import InputFieldComp from '../../components/InputFieldComp';
 import PickerFieldComp from '../../components/PickerFieldComp';
 import ColorStyle from '../../styles/ColorStyle';
+import HorizontalLineComp from '../../components/HorizontalLineComp';
 
 type Product = {
     id: string;
@@ -40,18 +41,18 @@ const NewOrderPage: React.FC = () => {
         <View style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100, padding: 16 }}>
                 <InputFieldComp label="Customer Name *" value={customerName} onChangeText={setCustomerName} placeholder="Input customer name" />
-                <View style={styles.divider} />
+                <HorizontalLineComp />
                 <Text style={styles.sectionTitle}>Product Detail</Text>
                 {products.map((item) => (
                     <View key={item.id} style={styles.productItem}>
                         <PickerFieldComp label="Product Name *" selectedValue={item.name} onValueChange={(value) => updateProduct(item.id, 'name', value)} options={dummyProducts} />
                         <InputFieldComp label="Price" value={item.price} editable={false} />
                         <InputFieldComp label="Quantity *" value={item.quantity} onChangeText={(value) => updateProduct(item.id, 'quantity', value)} keyboardType="numeric" placeholder="Enter quantity" />
-                        <View style={styles.divider} />
+                        <HorizontalLineComp />
                     </View>
                 ))}
                 <ButtonComponent label="Add More Product" onPress={addProduct} style={{ marginBottom: 16, marginTop: 8, width: 184 }} />
-                <View style={styles.divider} />
+                <HorizontalLineComp />
                 <InputFieldComp label="Total Order Price" value={totalOrderPrice} editable={false} />
             </ScrollView>
             <View style={styles.buttonContainer}>
@@ -69,7 +70,6 @@ const styles = StyleSheet.create({
 
     sectionTitle: { fontFamily: 'Poppins-Medium', fontSize: 14, color: ColorStyle.gray3, marginBottom: 16 },
     addButton: { backgroundColor: ColorStyle.primary1, padding: 10, borderRadius: 8, alignItems: 'center', marginBottom: 16 },
-    divider: { borderBottomColor: ColorStyle.container, borderBottomWidth: 0.5, marginVertical: 16 },
     productItem: { paddingBottom: 10 },
     buttonContainer: { backgroundColor: ColorStyle.white, padding: 16, position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-between', elevation: 2 },
 });

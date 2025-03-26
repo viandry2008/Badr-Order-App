@@ -3,6 +3,7 @@ import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View, Modal } from
 import ButtonComponent from '../../components/ButtonComponent';
 import ColorStyle from '../../styles/ColorStyle';
 import { BlurView } from '@react-native-community/blur';
+import HorizontalLineComp from '../../components/HorizontalLineComp';
 
 const OrderPage = ({ navigation }: any) => {
     const [orders, setOrders] = useState<any[]>([]);
@@ -66,7 +67,7 @@ const OrderPage = ({ navigation }: any) => {
                     <View style={styles.item}>
                         <Text style={styles.orderTitle}>Order Id</Text>
                         <Text style={styles.orderId}>{item.id}</Text>
-                        <View style={styles.divider} />
+                        <HorizontalLineComp />
                         <View style={styles.rowText}>
                             <Text style={styles.textGray}>Customer</Text>
                             <Text style={styles.textBlue}>{item.customer_name}</Text>
@@ -149,11 +150,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#052A49',
     },
-    divider: {
-        borderBottomColor: '#E0E0E0',
-        borderBottomWidth: 0.5,
-        marginVertical: 16,
-    },
+
     rowText: {
         flexDirection: 'row',
         justifyContent: 'space-between',
