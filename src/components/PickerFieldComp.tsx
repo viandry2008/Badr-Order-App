@@ -10,7 +10,8 @@ type PickerFieldProps = {
     options: { label: string; value: string }[];
 };
 
-const PickerFieldComp: React.FC<PickerFieldProps> = ({ label, selectedValue, onValueChange, options }) => {
+const PickerFieldComp = ({ label, selectedValue, onValueChange, options }: PickerFieldProps) => {
+
     const hasAsterisk = label.includes('*');
 
     return (

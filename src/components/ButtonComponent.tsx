@@ -11,14 +11,12 @@ interface ButtonProps {
     style?: ViewStyle;
 }
 
-const ButtonComponent: React.FC<ButtonProps> = ({
-    label,
+const ButtonComponent = ({ label,
     onPress,
     variant = 'solid',
     color = ColorStyle.primary1,
     disabled = false,
-    style,
-}) => {
+    style }: ButtonProps) => {
     return (
         <TouchableOpacity
             style={[

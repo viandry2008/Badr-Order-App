@@ -14,8 +14,7 @@ type Product = {
     totalPrice: string;
 };
 
-// Main Component
-const NewOrderPage: React.FC = () => {
+const NewOrderPage = ({ navigation }: any) => {
     const [customerName, setCustomerName] = useState<string>('');
     const [products, setProducts] = useState<{ id: string; name: string; price: string; quantity: string; totalPrice: string }[]>([
         { id: Date.now().toString(), name: '', price: '', quantity: '', totalPrice: '' }
@@ -56,7 +55,7 @@ const NewOrderPage: React.FC = () => {
                 <InputFieldComp label="Total Order Price" value={totalOrderPrice} editable={false} />
             </ScrollView>
             <View style={styles.buttonContainer}>
-                <ButtonComponent label="Back" onPress={() => console.log('Edit')} variant="outline" color={ColorStyle.primary1} style={{ flex: 1, marginRight: 8, borderColor: ColorStyle.container }} />
+                <ButtonComponent label="Back" onPress={() => navigation.goBack()} variant="outline" color={ColorStyle.primary1} style={{ flex: 1, marginRight: 8, borderColor: ColorStyle.container }} />
                 <ButtonComponent label="Save" onPress={() => console.log('Edit')} color={ColorStyle.primary2} style={{ flex: 1, marginRight: 8 }} />
             </View>
         </View>

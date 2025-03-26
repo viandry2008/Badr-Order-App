@@ -11,14 +11,13 @@ type InputFieldProps = {
     editable?: boolean;
 };
 
-const InputFieldComp: React.FC<InputFieldProps> = ({
-    label,
+const InputFieldComp = ({ label,
     value,
     onChangeText,
     placeholder,
     keyboardType = 'default',
-    editable = true
-}) => {
+    editable = true }: InputFieldProps) => {
+
     const hasAsterisk = label.includes('*');
 
     return (
