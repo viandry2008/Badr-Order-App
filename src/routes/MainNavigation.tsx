@@ -1,4 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Image, TouchableOpacity } from 'react-native';
 import OrderPage from '../pages/orderPage';
@@ -29,22 +30,22 @@ const MainNavigation = () => {
             <Stack.Screen
                 name="Order"
                 component={OrderPage}
-                options={() => HeaderOptions('Order', require('../assets/icons/add.png'), () => console.log('Tambah ditekan'))}
+                options={({ navigation }) => HeaderOptions('Order', require('../assets/icons/add.png'), () => navigation.navigate('NewOrder'))}
             />
             <Stack.Screen
                 name="NewOrder"
                 component={NewOrderPage}
-                options={() => HeaderOptions('Add New Order', require('../assets/icons/back.png'), () => console.log('Kembali ke Order'))}
+                options={({ navigation }) => HeaderOptions('Add New Order', require('../assets/icons/back.png'), () => navigation.goBack())}
             />
             <Stack.Screen
                 name="DetailOrder"
                 component={DetailOrderPage}
-                options={() => HeaderOptions('Detail Order', require('../assets/icons/back.png'), () => console.log('Kembali ke Order'))}
+                options={({ navigation }) => HeaderOptions('Detail Order', require('../assets/icons/back.png'), () => navigation.goBack())}
             />
             <Stack.Screen
                 name="EditOrder"
                 component={EditOrderPage}
-                options={() => HeaderOptions('Edit Order', require('../assets/icons/back.png'), () => console.log('Kembali ke Order'))}
+                options={({ navigation }) => HeaderOptions('Edit Order', require('../assets/icons/back.png'), () => navigation.goBack())}
             />
         </Stack.Navigator>
     );
