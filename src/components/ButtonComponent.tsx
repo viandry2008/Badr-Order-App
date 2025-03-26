@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     outlineButton: {
-        borderWidth: 2,
+        borderWidth: 1,
         backgroundColor: 'transparent',
     },
     text: {

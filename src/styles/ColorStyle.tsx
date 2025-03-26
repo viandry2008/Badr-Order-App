@@ -14,7 +14,7 @@ const ColorStyle = {
   errorContainer: '#FEF1F1',
   success: '#12B76A',
   successContainer: '#ECFDF3',
-  error: '#EF3A3A',
+  error: '#EB5757',
   surface: '#1C1B1F',
   placeholder: '#79747E',
 };
