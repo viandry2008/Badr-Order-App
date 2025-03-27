@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux/store';
 import { fetchProducts } from '../../redux/slices/productSlice';
+import { createOrder } from '../../redux/slices/orderSlice'; // Import Create Order
 import ButtonComponent from '../../components/ButtonComponent';
 import InputFieldComp from '../../components/InputFieldComp';
 import PickerFieldComp from '../../components/PickerFieldComp';
@@ -28,6 +29,7 @@ const parseCurrency = (value: string): number => {
 const NewOrderPage = ({ navigation }: any) => {
     const dispatch = useDispatch<AppDispatch>();
     const { products, loading } = useSelector((state: RootState) => state.products);
+    const orderLoading = useSelector((state: RootState) => state.orders.loading);
 
     const [customerName, setCustomerName] = useState<string>('');
     const [selectedProducts, setSelectedProducts] = useState<Product[]>([
@@ -73,6 +75,35 @@ const NewOrderPage = ({ navigation }: any) => {
         );
     }, [products]);
 
+    // **HANDLE CREATE ORDER**
+    const handleCreateOrder = async () => {
+        if (!customerName.trim()) {
+            Alert.alert('Error', 'Customer name is required!');
+            return;
+        }
+
+        const formattedProducts = selectedProducts
+            .filter((p) => p.name && p.quantity > 0)
+            .map((p) => ({ product_id: Number(products.find((prod) => prod.name === p.name)?.id), quantity: p.quantity }));
+
+        if (formattedProducts.length === 0) {
+            Alert.alert('Error', 'Please select at least one product with a valid quantity!');
+            return;
+        }
+
+        const orderData = {
+            customer_name: customerName,
+            products: formattedProducts
+        };
+
+        try {
+            const result = await dispatch(createOrder(orderData)).unwrap();
+            Alert.alert('Success', 'Order created successfully!', [{ text: 'OK', onPress: () => navigation.goBack() }]);
+        } catch (error) {
+            Alert.alert('Error', 'Failed to create order');
+        }
+    };
+
     return (
         <View style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100, padding: 16 }}>
@@ -93,7 +124,6 @@ const NewOrderPage = ({ navigation }: any) => {
                             selectedValue={products.find(p => p.name === item.name)?.id || 0} 
                             onValueChange={(value) => updateProduct(item.id, 'name', value)} 
                             options={products} 
-                            // loading={loading}
                         />
                         <InputFieldComp label="Price" value={formatCurrency(item.price)} editable={false} />
                         <InputFieldComp 
@@ -127,9 +157,10 @@ const NewOrderPage = ({ navigation }: any) => {
                     style={{ flex: 1, marginRight: 8, borderColor: ColorStyle.container }} 
                 />
                 <ButtonComponent 
-                    label="Save" 
-                    onPress={() => console.log('Save Order')} 
+                    label={orderLoading ? "Saving..." : "Save"} 
+                    onPress={handleCreateOrder} 
                     color={ColorStyle.primary2} 
+                    disabled={orderLoading}
                     style={{ flex: 1, marginRight: 8 }} 
                 />
             </View>
