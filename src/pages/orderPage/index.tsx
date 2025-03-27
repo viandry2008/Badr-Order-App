@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View, Modal, ActivityIndicator } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../redux/store';
-import { deleteOrder, fetchOrders, removeOrder, resetOrders } from '../../redux/slices/orderSlice';
-import ButtonComponent from '../../components/ButtonComponent';
-import ColorStyle from '../../styles/ColorStyle';
 import { BlurView } from '@react-native-community/blur';
-import HorizontalLineComp from '../../components/HorizontalLineComp';
 import moment from 'moment';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import ButtonComponent from '../../components/ButtonComponent';
+import HorizontalLineComp from '../../components/HorizontalLineComp';
+import { deleteOrder, fetchOrders, resetOrders } from '../../redux/slices/orderSlice';
+import { AppDispatch, RootState } from '../../redux/store';
+import ColorStyle from '../../styles/ColorStyle';
 
 const OrderPage = ({ navigation }: any) => {
     const dispatch = useDispatch<AppDispatch>();
@@ -63,7 +63,7 @@ const OrderPage = ({ navigation }: any) => {
                         </View>
 
                         <View style={styles.buttonContainer}>
-                            <ButtonComponent label="Edit" onPress={() => console.log('Edit')} style={styles.flexButton} />
+                            <ButtonComponent label="Edit" onPress={() => navigation.navigate('FormOrder', { orderId: item.id })} style={styles.flexButton} />
                             <ButtonComponent label="Detail" onPress={() => navigation.navigate('DetailOrder', { orderId: item.id })} variant="outline" color={ColorStyle.primary2} style={styles.flexButton} />
                             <TouchableOpacity
                                 style={styles.deleteButton}

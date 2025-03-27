@@ -3,8 +3,7 @@ import React from 'react';
 import { Image, TouchableOpacity } from 'react-native';
 import OrderPage from '../pages/orderPage';
 import DetailOrderPage from '../pages/orderPage/DetailOrderPage';
-import EditOrderPage from '../pages/orderPage/EditOrderPage';
-import NewOrderPage from '../pages/orderPage/NewOrderPage';
+import FormOrderPage from '../pages/orderPage/FormOrderPage';
 
 const HeaderOptions = (title: string, icon: any, onPress: () => void) => ({
     title,
@@ -28,22 +27,17 @@ const MainNavigation = () => {
             <Stack.Screen
                 name="Order"
                 component={OrderPage}
-                options={({ navigation }) => HeaderOptions('Order', require('../assets/icons/add.png'), () => navigation.navigate('NewOrder'))}
+                options={({ navigation }) => HeaderOptions('Order', require('../assets/icons/add.png'), () => navigation.navigate('FormOrder'))}
             />
             <Stack.Screen
-                name="NewOrder"
-                component={NewOrderPage}
+                name="FormOrder"
+                component={FormOrderPage}
                 options={({ navigation }) => HeaderOptions('Add New Order', require('../assets/icons/back.png'), () => navigation.goBack())}
             />
             <Stack.Screen
                 name="DetailOrder"
                 component={DetailOrderPage}
                 options={({ navigation }) => HeaderOptions('Detail Order', require('../assets/icons/back.png'), () => navigation.goBack())}
-            />
-            <Stack.Screen
-                name="EditOrder"
-                component={EditOrderPage}
-                options={({ navigation }) => HeaderOptions('Edit Order', require('../assets/icons/back.png'), () => navigation.goBack())}
             />
         </Stack.Navigator>
     );

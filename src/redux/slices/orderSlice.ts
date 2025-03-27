@@ -25,7 +25,6 @@ interface OrderDetail {
   products: { quantity: number; product: { name: string; price: number; id: number } }[];
 }
 
-// **GET Orders dengan Pagination**
 export const fetchOrders = createAsyncThunk(
   'orders/fetchOrders',
   async (page: number, { rejectWithValue }) => {
@@ -83,6 +82,18 @@ export const createOrder = createAsyncThunk(
   }
 );
 
+export const updateOrder = createAsyncThunk(
+  'orders/updateOrder',
+  async ({ orderId, orderData }: { orderId: string; orderData: { customer_name: string; products: { product_id: number; quantity: number }[] } }, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.put(`/order/${orderId}`, orderData);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to update order');
+    }
+  }
+);
+
 
 const orderSlice = createSlice({
   name: 'orders',
@@ -108,9 +119,9 @@ const orderSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // list order
       .addCase(fetchOrders.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(fetchOrders.fulfilled, (state, action) => {
         state.loading = false;
@@ -123,7 +134,7 @@ const orderSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      //orderDetail
+      // Fetch Order Detail
       .addCase(fetchOrderDetail.pending, (state) => {
         state.loading = true;
       })
@@ -135,7 +146,7 @@ const orderSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      //deleteOrder
+      // Delete Order
       .addCase(deleteOrder.pending, (state) => {
         state.loading = true;
       })
@@ -147,19 +158,38 @@ const orderSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      //createOrder
+      // Create Order
       .addCase(createOrder.pending, (state) => {
         state.loading = true;
       })
-      .addCase(createOrder.fulfilled, (state) => {
+      .addCase(createOrder.fulfilled, (state, action) => {
         state.loading = false;
+        if (action.payload) {
+          state.data.push(action.payload); // Tambahkan order baru ke state
+        }
       })
       .addCase(createOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      // Update Order
+      .addCase(updateOrder.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateOrder.fulfilled, (state, action) => {
+        state.loading = false;
+        const updatedOrder = action.payload;
+        if (updatedOrder && updatedOrder.id) {
+          state.data = state.data.map((order) => (order.id === updatedOrder.id ? updatedOrder : order));
+        }
+      })
+      .addCase(updateOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
   },
 });
+
 
 export const { resetOrders, removeOrder } = orderSlice.actions;
 export default orderSlice.reducer;
