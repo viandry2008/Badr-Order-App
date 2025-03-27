@@ -7,6 +7,7 @@ import ButtonComponent from '../../components/ButtonComponent';
 import ColorStyle from '../../styles/ColorStyle';
 import { BlurView } from '@react-native-community/blur';
 import HorizontalLineComp from '../../components/HorizontalLineComp';
+import moment from 'moment';
 
 const OrderPage = ({ navigation }: any) => {
     const dispatch = useDispatch<AppDispatch>();
@@ -58,7 +59,7 @@ const OrderPage = ({ navigation }: any) => {
                         </View>
                         <View style={styles.rowText}>
                             <Text style={styles.textGray}>Order Date</Text>
-                            <Text style={styles.textBlue}>{item.created_at}</Text>
+                            <Text style={styles.textBlue}> {moment(item.created_at).format('DD/MM/YYYY HH:mm')}</Text>
                         </View>
 
                         <View style={styles.buttonContainer}>
