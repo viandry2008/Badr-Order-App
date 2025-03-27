@@ -1,8 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-const HorizontalLineComp = () => ({
-}) => {
+const HorizontalLineComp = () => {
     return (
         <View style={styles.divider} />
     );

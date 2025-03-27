@@ -1,15 +1,18 @@
-import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import { FlatList, ScrollView, StyleSheet, Text, View, ActivityIndicator } from 'react-native';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchOrderDetail } from '../../redux/slices/orderSlice';
+import { RootState, AppDispatch } from '../../redux/store';
 import ColorStyle from '../../styles/ColorStyle';
 
-const DetailOrderPage = () => {
-    const productList = [
-        { id: '1', name: 'Hero Mie', price: 'Rp 1.000', quantity: '10', totalPrice: 'Rp 10.000' },
-        { id: '2', name: 'Super Snack', price: 'Rp 2.000', quantity: '5', totalPrice: 'Rp 10.000' },
-        { id: '3', name: 'Super Snack', price: 'Rp 2.000', quantity: '5', totalPrice: 'Rp 10.000' },
-        { id: '4', name: 'Super Snack', price: 'Rp 2.000', quantity: '5', totalPrice: 'Rp 10.000' },
-        { id: '5', name: 'Super Snack', price: 'Rp 2.000', quantity: '5', totalPrice: 'Rp 10.000' },
-    ];
+const DetailOrderPage = ({ route }: any) => {
+    const { orderId } = route.params; // Ambil orderId dari parameter navigasi
+    const dispatch = useDispatch<AppDispatch>();
+    const { orderDetail, loading } = useSelector((state: RootState) => state.orders);
+
+    useEffect(() => {
+        dispatch(fetchOrderDetail(orderId));
+    }, [dispatch, orderId]);
 
     const columnText = (title1: string, title2: string) => (
         <View style={{ marginBottom: 16 }}>
@@ -27,26 +30,47 @@ const DetailOrderPage = () => {
 
     const renderItem = ({ item }: any) => (
         <View>
-            {rowText('Product Name', item.name)}
-            {rowText('Price', item.price)}
-            {rowText('Quantity', item.quantity)}
-            {rowText('Total Price', item.totalPrice)}
+            {rowText('Product Name', item.product.name)}
+            {rowText('Price', `Rp ${item.product.price.toLocaleString()}`)}
+            {rowText('Quantity', item.quantity.toString())}
+            {rowText('Total Price', `Rp ${(item.quantity * item.product.price).toLocaleString()}`)}
             <View style={styles.divider} />
         </View>
     );
 
+    if (loading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={ColorStyle.primary1} />
+            </View>
+        );
+    }
+
+    if (!orderDetail) {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.textRegular}>Order details not available.</Text>
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false}>
-                {columnText('Order ID', '11001100')}
-                {columnText('Customer Name', 'Anugrah Store')}
-                {columnText('Total Order Price', 'Rp 1.000.000')}
+                {columnText('Order ID', orderDetail.order_id)}
+                {columnText('Customer Name', orderDetail.customer_name)}
+                {columnText(
+                    'Total Order Price',
+                    `Rp ${orderDetail.products
+                        .reduce((total, item) => total + item.quantity * item.product.price, 0)
+                        .toLocaleString()}`
+                )}
                 <Text style={styles.sectionTitle}>Product Detail</Text>
                 <FlatList
-                    data={productList}
-                    keyExtractor={(item) => item.id}
+                    data={orderDetail.products}
+                    keyExtractor={(item, index) => `${item.product.id}-${index}`}
                     renderItem={renderItem}
-                    scrollEnabled={false} // Agar FlatList mengikuti ScrollView
+                    scrollEnabled={false}
                 />
             </ScrollView>
         </View>
@@ -57,6 +81,7 @@ export default DetailOrderPage;
 
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 16, backgroundColor: ColorStyle.white },
+    loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     textRegular: { fontFamily: 'Poppins-Regular', fontSize: 16, color: ColorStyle.black, marginBottom: 10 },
     textBold: { fontFamily: 'Poppins-Bold', fontSize: 20, color: ColorStyle.primary1 },
     rowContainer: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },

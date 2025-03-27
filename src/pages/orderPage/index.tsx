@@ -1,60 +1,36 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View, Modal } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View, Modal, ActivityIndicator } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../redux/store';
+import { deleteOrder, fetchOrders, removeOrder, resetOrders } from '../../redux/slices/orderSlice';
 import ButtonComponent from '../../components/ButtonComponent';
 import ColorStyle from '../../styles/ColorStyle';
 import { BlurView } from '@react-native-community/blur';
 import HorizontalLineComp from '../../components/HorizontalLineComp';
 
 const OrderPage = ({ navigation }: any) => {
-    const [orders, setOrders] = useState<any[]>([]);
-    const [page, setPage] = useState(1);
-    const [loading, setLoading] = useState(false);
-    const [hasMore, setHasMore] = useState(true);
+    const dispatch = useDispatch<AppDispatch>();
+    const { data: orders, loading, hasMore, page } = useSelector((state: RootState) => state.orders);
+
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
-    const fetchOrders = async (currentPage: number) => {
-        if (loading || !hasMore) return;
-
-        setLoading(true);
-        setTimeout(() => {
-            const totalItems = 120;
-            const perPage = 10;
-            const newOrders = Array.from({ length: perPage }, (_, i) => {
-                const id = (currentPage - 1) * perPage + i + 1;
-                if (id > totalItems) return null;
-                return {
-                    id: id.toString(),
-                    customer_name: `Customer ${id}`,
-                    total_products: Math.floor(Math.random() * 100),
-                    total_price: Math.floor(Math.random() * 100000),
-                    created_at: new Date().toISOString(),
-                };
-            }).filter(Boolean) as any[];
-
-            setOrders((prev) => {
-                const uniqueOrders = new Set([...prev.map((o) => o.id), ...newOrders.map((o) => o.id)]);
-                return Array.from(uniqueOrders).map((id) => [...prev, ...newOrders].find((o) => o.id === id));
-            });
-
-            setHasMore(newOrders.length === perPage);
-            setLoading(false);
-        }, 1000);
-    };
-
     useEffect(() => {
-        fetchOrders(page);
-    }, [page]);
+        dispatch(resetOrders());
+        dispatch(fetchOrders(1));
+    }, [dispatch]);
 
     const loadMore = () => {
         if (!loading && hasMore) {
-            setPage((prev) => prev + 1);
+            dispatch(fetchOrders(page));
         }
     };
 
     const handleDelete = () => {
-        setOrders(orders.filter(order => order.id !== selectedOrder?.id));
-        setShowDeleteModal(false);
+        if (selectedOrder) {
+            dispatch(deleteOrder(selectedOrder.id));
+            setShowDeleteModal(false);
+        }
     };
 
     return (
@@ -87,7 +63,7 @@ const OrderPage = ({ navigation }: any) => {
 
                         <View style={styles.buttonContainer}>
                             <ButtonComponent label="Edit" onPress={() => console.log('Edit')} style={styles.flexButton} />
-                            <ButtonComponent label="Detail" onPress={() => navigation.navigate('DetailOrder')} variant="outline" color={ColorStyle.primary2} style={styles.flexButton} />
+                            <ButtonComponent label="Detail" onPress={() => navigation.navigate('DetailOrder', { orderId: item.id })} variant="outline" color={ColorStyle.primary2} style={styles.flexButton} />
                             <TouchableOpacity
                                 style={styles.deleteButton}
                                 onPress={() => {
@@ -102,6 +78,7 @@ const OrderPage = ({ navigation }: any) => {
                 )}
                 onEndReached={loadMore}
                 onEndReachedThreshold={0.5}
+                ListFooterComponent={loading ? <ActivityIndicator size="large" color="blue" /> : null}
             />
 
             {/* Modal Konfirmasi Hapus */}
@@ -127,99 +104,22 @@ const OrderPage = ({ navigation }: any) => {
 export default OrderPage;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        paddingHorizontal: 16,
-        backgroundColor: ColorStyle.white,
-    },
-    item: {
-        marginVertical: 16,
-        padding: 16,
-        marginBottom: 16,
-        borderRadius: 4,
-        borderWidth: 1,
-        borderColor: '#E0E0E0',
-    },
-    orderTitle: {
-        fontFamily: 'Poppins-Medium',
-        fontSize: 14,
-        color: '#052A49',
-    },
-    orderId: {
-        fontFamily: 'Poppins-Bold',
-        fontSize: 14,
-        color: '#052A49',
-    },
-
-    rowText: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 8,
-    },
-    textGray: {
-        fontFamily: 'Poppins-Regular',
-        fontSize: 13,
-        color: '#4F4F4F',
-    },
-    textBlue: {
-        fontFamily: 'Poppins-Regular',
-        fontSize: 13,
-        color: '#052A49',
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 12,
-    },
-    flexButton: {
-        flex: 1,
-        marginRight: 8,
-    },
-    deleteButton: {
-        width: 44,
-        height: 44,
-        borderRadius: 4,
-        borderWidth: 1,
-        borderColor: '#E0E0E0',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    deleteIcon: {
-        width: 24,
-        height: 24,
-    },
-    modalOverlay: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    blurBackground: {
-        ...StyleSheet.absoluteFillObject, // Menutupi seluruh layar
-        // overlayColor: ColorStyle.primary1
-        overlayColor: 'rgba(5, 42, 73, 0.3)',
-    },
-    modalContainer: {
-        width: 300,
-        backgroundColor: '#fff',
-        padding: 20,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    modalTitle: {
-        fontFamily: 'Poppins-Bold',
-        fontSize: 16,
-        color: '#333',
-        textAlign: 'center',
-    },
-    modalDescription: {
-        fontFamily: 'Poppins-Regular',
-        fontSize: 14,
-        color: '#666',
-        textAlign: 'center',
-        marginTop: 10,
-        marginBottom: 20,
-    },
-    modalButtonContainer: {
-        width: '100%',
-    },
+    container: { flex: 1, paddingHorizontal: 16, backgroundColor: ColorStyle.white },
+    item: { marginVertical: 16, padding: 16, borderRadius: 4, borderWidth: 1, borderColor: '#E0E0E0' },
+    orderTitle: { fontFamily: 'Poppins-Medium', fontSize: 14, color: '#052A49' },
+    orderId: { fontFamily: 'Poppins-Bold', fontSize: 14, color: '#052A49' },
+    rowText: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
+    textGray: { fontFamily: 'Poppins-Regular', fontSize: 13, color: '#4F4F4F' },
+    textBlue: { fontFamily: 'Poppins-Regular', fontSize: 13, color: '#052A49' },
+    buttonContainer: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 },
+    flexButton: { flex: 1, marginRight: 8 },
+    deleteButton: { width: 44, height: 44, borderRadius: 4, borderWidth: 1, borderColor: '#E0E0E0', alignItems: 'center', justifyContent: 'center' },
+    deleteIcon: { width: 24, height: 24 },
+    modalOverlay: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+    blurBackground: { ...StyleSheet.absoluteFillObject, overlayColor: 'rgba(5, 42, 73, 0.3)' },
+    modalContainer: { width: 300, backgroundColor: '#fff', padding: 20, borderRadius: 8, alignItems: 'center' },
+    modalTitle: { fontFamily: 'Poppins-Bold', fontSize: 16, color: '#333', textAlign: 'center' },
+    modalDescription: { fontFamily: 'Poppins-Regular', fontSize: 14, color: '#666', textAlign: 'center', marginTop: 10, marginBottom: 20 },
+    modalButtonContainer: { width: '100%' },
+    error: { color: 'red', textAlign: 'center', marginTop: 10 },
 });
